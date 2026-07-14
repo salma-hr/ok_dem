@@ -4,7 +4,7 @@
 
 Ce projet a été réalisé dans le cadre de mon **Projet de Fin d'Études (PFE)** au sein de **LEONI Wiring Systems Tunisia**.
 
-L'objectif est de digitaliser le processus **OK Démarrage** afin de remplacer les checklists papier par une solution numérique assurant la traçabilité, le suivi des validations, la gestion des non-conformités et l'aide à la décision grâce à l'intelligence artificielle.
+L'objectif est de digitaliser le processus **OK Démarrage** afin de remplacer les checklists papier par une solution numérique assurant la traçabilité, le suivi des validations, la gestion des non-conformités .
 
 ---
 
@@ -21,7 +21,6 @@ L'objectif est de digitaliser le processus **OK Démarrage** afin de remplacer l
 - Notifications automatiques
 - Import automatique des critères depuis des fichiers PDF
 - Traduction automatique des critères
-- Détection des anomalies via un microservice d'IA
 - Tableau de bord interactif
 - Génération de rapports PDF
 
@@ -51,8 +50,6 @@ L'objectif est de digitaliser le processus **OK Démarrage** afin de remplacer l
 
 - Python
 - FastAPI
-- Scikit-learn
-- Isolation Forest
 
 ### Base de données
 
