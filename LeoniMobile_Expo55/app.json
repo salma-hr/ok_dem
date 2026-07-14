@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "LeoniMobile",
+    "slug": "leonimobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#003f7e"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.leoni.okdemarrage"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#003f7e"
+      },
+      "package": "com.leoni.okdemarrage"
+    },
+    "platforms": ["ios", "android"]
+  }
+}

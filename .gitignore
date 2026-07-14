@@ -1,0 +1,5 @@
+node_modules/
+*.zip
+back/target/
+.env
+application-local.properties

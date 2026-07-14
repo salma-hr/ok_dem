@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  suspicion-service:
+    build: ./suspicion-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./suspicion-service/model:/app/model
+    environment:
+      - RETRAIN_API_KEY=changeme-in-prod
+
+  front:
+    build: ./front
+    ports:
+      - "3000:80"
+    depends_on:
+      - suspicion-service
