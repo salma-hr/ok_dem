@@ -154,26 +154,3 @@ ok_dem/
 ├── README.md
 └── ok_db.sql
 ```
-
----
-
-## 📸 Captures d'écran
-
-À compléter avec des captures de :
-
-- Écran de connexion
-- Tableau de bord
-- Gestion des checklists
-- Validation des checklists
-- Gestion des non-conformités
-- Génération des rapports PDF
-
----
-
-## 👩‍💻 Auteur
-
-**Salma Hrabi**
-
-Projet de Fin d'Études – Licence en Technologie de l'Information
-
-ISET Sousse – 2026
