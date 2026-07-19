@@ -34,7 +34,6 @@ public class PlanActionService {
     private final UtilisateurRepository utilisateurRepository;
     private final NotificationService notificationService;
     private final ChecklistAuditService checklistAuditService;
-    private final GroqService groqService;
     private final ScopeService scopeService;
 
     // ── Lecture ──────────────────────────────────────────────────────────────
@@ -194,7 +193,6 @@ public class PlanActionService {
             if (r.getCommentaire() != null && !r.getCommentaire().isBlank())
                 listeNC.append(" (remarque : ").append(r.getCommentaire()).append(")");
             listeNC.append("\n");
-            // Générer via Groq pour la première NC et enrichir si plusieurs
         }
 
         // Utiliser la NC la plus critique (SECURITE > QUALITE > TECHNIQUE)
@@ -210,7 +208,7 @@ public class PlanActionService {
                 : "TECHNIQUE";
         String descPrincipal = principale.getCritere() != null ? principale.getCritere().getDescription() : null;
 
-        String base = groqService.genererDescriptionPlanAction(nomPrincipal, typePrincipal, descPrincipal);
+        String base = genererDescription(nomPrincipal, typePrincipal, descPrincipal);
 
         // Si plusieurs NC, ajouter une mention
         if (nonConformes.size() > 1) {
@@ -228,6 +226,22 @@ public class PlanActionService {
             case "QUALITE" -> 2;
             case "TECHNIQUE" -> 1;
             default -> 0;
+        };
+    }
+
+    /**
+     * Génère une description d'action corrective à partir de règles fixes par type de critère
+     * (aucun appel à un service IA externe).
+     */
+    private String genererDescription(String critereNom, String critereType, String description) {
+        return switch (critereType != null ? critereType.toUpperCase() : "") {
+            case "SECURITE" -> "Arrêter immédiatement la machine et sécuriser la zone. Vérifier et corriger : "
+                    + critereNom + ". Informer le responsable avant reprise.";
+            case "QUALITE" -> "Contrôler et ajuster le paramètre non-conforme : " + critereNom
+                    + ". Documenter les mesures correctives effectuées.";
+            case "TECHNIQUE" -> "Effectuer un diagnostic technique sur : " + critereNom
+                    + ". Réaliser la maintenance corrective nécessaire.";
+            default -> "Analyser et corriger la non-conformité détectée : " + critereNom + ".";
         };
     }
 
@@ -264,7 +278,7 @@ public class PlanActionService {
                 // ROUGE → validation AQ requise · JAUNE → clôture technicien suffit
                 String couleur = reponse.getValeur().name(); // "ROUGE" ou "JAUNE"
 
-                String description = groqService.genererDescriptionPlanAction(critereNom, critereType, critereDesc);
+                String description = genererDescription(critereNom, critereType, critereDesc);
 
                 PlanAction.Priorite priorite = switch (critereType) {
                     case "SECURITE" -> PlanAction.Priorite.CRITIQUE;

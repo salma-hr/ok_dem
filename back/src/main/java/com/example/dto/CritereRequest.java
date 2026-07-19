@@ -19,11 +19,11 @@ public class CritereRequest {
     private String nomAr;
     private String descriptionAr;
 
-    // ── Textes anglais (auto-traduit via LibreTranslate) ─────────
+    // ── Textes anglais (saisie manuelle) ─────────
     private String nomEn;
     private String descriptionEn;
 
-    // ── Textes allemand (auto-traduit via LibreTranslate) ────────
+    // ── Textes allemand (saisie manuelle) ────────
     private String nomDe;
     private String descriptionDe;
 

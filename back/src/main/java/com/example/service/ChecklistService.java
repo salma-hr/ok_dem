@@ -141,16 +141,52 @@ public class ChecklistService {
         if (okd.getSite() != null) {
             dto.setSiteId(okd.getSite().getId());
             dto.setSiteNom(okd.getSite().getNom());
-            Processus proc = (okd.getMachine() != null) ? okd.getMachine().getProcessus() : null;
-            if (proc == null && okd.getOperateur() != null)
-                proc = okd.getOperateur().getProcessus();
-            if (proc != null && proc.getSegment() != null) {
-                Segment segment = proc.getSegment();
-                dto.setSegmentId(segment.getId());
-                if (segment.getPlant() != null) {
-                    dto.setPlantId(segment.getPlant().getId());
-                    dto.setPlantNom(segment.getPlant().getNom());
+
+            // Résolution du segment/plant avec plusieurs niveaux de repli :
+            // 1) lien direct sur la machine (le plus fiable, Machine a ses propres
+            //    colonnes segment_id/plant_id)
+            // 2) machine -> processus -> segment -> plant
+            // 3) lien direct sur l'opérateur (segment_id/plant_id)
+            // 4) opérateur -> processus -> segment -> plant
+            // Sans ça, un processus sans segment configuré faisait rester plantId à
+            // null et la checklist disparaissait silencieusement du filtrage par plant.
+            Segment segment = null;
+            Plant plant = null;
+
+            if (okd.getMachine() != null) {
+                if (okd.getMachine().getSegment() != null) {
+                    segment = okd.getMachine().getSegment();
                 }
+                if (okd.getMachine().getPlant() != null) {
+                    plant = okd.getMachine().getPlant();
+                }
+                if (segment == null && okd.getMachine().getProcessus() != null
+                        && okd.getMachine().getProcessus().getSegment() != null) {
+                    segment = okd.getMachine().getProcessus().getSegment();
+                }
+            }
+            if (segment == null && okd.getOperateur() != null) {
+                if (okd.getOperateur().getSegment() != null) {
+                    segment = okd.getOperateur().getSegment();
+                }
+                if (plant == null && okd.getOperateur().getPlant() != null) {
+                    plant = okd.getOperateur().getPlant();
+                }
+                if (segment == null && okd.getOperateur().getProcessus() != null
+                        && okd.getOperateur().getProcessus().getSegment() != null) {
+                    segment = okd.getOperateur().getProcessus().getSegment();
+                }
+            }
+            if (plant == null && segment != null && segment.getPlant() != null) {
+                plant = segment.getPlant();
+            }
+
+            if (segment != null) {
+                dto.setSegmentId(segment.getId());
+            }
+            if (plant != null) {
+                dto.setPlantId(plant.getId());
+                dto.setPlantNom(plant.getNom());
             }
         }
         if (okd.getReponses() != null) {

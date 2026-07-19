@@ -707,6 +707,7 @@ const ar = {
     success: {
       title: 'تم إرسال قائمة المراجعة بنجاح!',
       consultBtn: 'عرض قائمة المراجعة',
+      fullscreenFlagBtn: 'عرض الراية في وضع ملء الشاشة',
       alertTitle: '⚠️ عدم مطابقات مكتشفة',
       alertBody: 'تم الإبلاغ عن {{count}} معيار غير مطابق.',
       validationTracking: 'متابعة التحقق',
@@ -1223,6 +1224,18 @@ const ar = {
         aiGenerate: 'خطأ أثناء التوليد بالذكاء الاصطناعي',
       },
     },
+  },
+  ltpmFlag: {
+    lastUpdate: 'آخر تحديث:',
+    refreshBtn: 'تحديث',
+    fullscreenBtn: 'ملء الشاشة',
+    exitBtn: 'خروج',
+    noMachineHint: 'لم يتم اختيار آلة: افتح هذه الشاشة من قائمة مراجعة المشغل للمتابعة حسب الآلة.',
+    photoModeBtn: 'عرض صورة للعلم',
+    iconModeBtn: 'العودة إلى عرض الرمز',
+    uploadPhotoBtn: 'تحميل صورة لهذه الحالة',
+    clearPhotoBtn: 'حذف صورة هذه الحالة',
+    noPhotoHint: 'لا توجد صورة محفوظة لهذه الحالة: استخدم زر 📤 لتحميل صورة العلم لعرضها هنا.',
   },
   status: {
     checklist: {

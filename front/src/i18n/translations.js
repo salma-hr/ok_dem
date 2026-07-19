@@ -1096,6 +1096,7 @@ const fr = {
     success: {
       title: 'Checklist soumise avec succès !',
       consultBtn: 'Consulter la checklist',
+      fullscreenFlagBtn: 'Afficher le drapeau en plein écran',
       alertTitle: '⚠️ Non-conformités détectées',
       alertBody: '{{count}} critère(s) non conforme(s) ont été signalés.',
       validationTracking: 'Suivi des validations',
@@ -1639,6 +1640,19 @@ const fr = {
     },
     noRecentNc: 'Aucun NC récent',
     ncsPerDay: 'par jour',
+  },
+
+  ltpmFlag: {
+    lastUpdate: 'Mise à jour :',
+    refreshBtn: 'Actualiser',
+    fullscreenBtn: 'Plein écran',
+    exitBtn: 'Quitter',
+    noMachineHint: 'Aucune machine sélectionnée : ouvrez cet écran depuis la checklist opérateur pour un suivi par machine.',
+    photoModeBtn: 'Afficher une photo du drapeau',
+    iconModeBtn: 'Revenir à l\'affichage icône',
+    uploadPhotoBtn: 'Charger une photo pour cet état',
+    clearPhotoBtn: 'Supprimer la photo de cet état',
+    noPhotoHint: 'Aucune photo enregistrée pour cet état : utilisez le bouton 📤 pour charger la photo du drapeau à afficher ici.',
   },
 
   status: {

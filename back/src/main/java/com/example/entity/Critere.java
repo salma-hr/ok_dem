@@ -32,14 +32,14 @@ public class Critere {
     @Column(name = "description_ar", columnDefinition = "TEXT")
     private String descriptionAr;
 
-    // ── Textes anglais (auto-traduit via LibreTranslate) ─────────
+    // ── Textes anglais (saisie manuelle) ─────────
     @Column(name = "nom_en", length = 500)
     private String nomEn;
 
     @Column(name = "description_en", columnDefinition = "TEXT")
     private String descriptionEn;
 
-    // ── Textes allemand (auto-traduit via LibreTranslate) ────────
+    // ── Textes allemand (saisie manuelle) ────────
     @Column(name = "nom_de", length = 500)
     private String nomDe;
 

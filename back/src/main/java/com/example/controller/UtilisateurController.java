@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +75,11 @@ public class UtilisateurController {
     public ResponseEntity<?> create(@RequestBody CreateUtilisateurRequest request) {
         try {
             return ResponseEntity.ok(utilisateurService.create(request));
+        } catch (DataIntegrityViolationException e) {
+            // Filet de sécurité si deux requêtes concurrentes (ex: double-clic) passent
+            // toutes les deux la vérification existsByMatricule() avant l'insertion.
+            return ResponseEntity.badRequest().body(
+                    "Ce matricule (ou cet email) vient d'être utilisé par une autre création. Veuillez réessayer.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -85,6 +91,9 @@ public class UtilisateurController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CreateUtilisateurRequest request) {
         try {
             return ResponseEntity.ok(utilisateurService.update(id, request));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body(
+                    "Ce matricule (ou cet email) vient d'être utilisé par une autre création. Veuillez réessayer.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

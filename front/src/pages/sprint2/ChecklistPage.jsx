@@ -2203,7 +2203,7 @@ export default function ChecklistPage() {
       ? plans.filter(p => {
           const planMatricule = String(p?.responsableMatricule || "").trim();
           const planNom = String(p?.responsableNom || "").trim();
-          return (planMatricule && planMatricule === userMatricule) || (!planMatricule && planNom && planNom === userNom);
+          return (planMatricule && planMatricule.toLowerCase() === userMatricule.toLowerCase()) || (!planMatricule && planNom && planNom.toLowerCase() === userNom.toLowerCase());
         })
       : [];
     const plansRouge       = plans.filter(p => p.couleurCritere === "ROUGE");
@@ -3097,7 +3097,7 @@ function DrawerContent({ selected, sessions, results, statusCfg, locale, t, link
 
                 {(() => {
                   const isAutres = plan.responsableMatricule === "AUTRES" || !!plan.responsableAutre;
-                  const isCreatorChef = isChefLigne && String(plan.creeParMatricule || "").trim() === userMatricule;
+                  const isCreatorChef = isChefLigne && String(plan.creeParMatricule || "").trim().toLowerCase() === userMatricule.toLowerCase();
                   const canCloseByTechnician = isTechnicien && isRouge && !isClos && !isValideAQ && !isEnAttenteAQ;
                   const canCloseByChefLigne = isCreatorChef && !isRouge && !isClos && !isValideAQ && !isEnAttenteAQ;
                   const canCloseRedByChefLigneAutres = isCreatorChef && isAutres && isRouge && !isClos && !isValideAQ && !isEnAttenteAQ;

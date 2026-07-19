@@ -658,6 +658,7 @@ const en = {
     success: {
       title: 'Checklist submitted successfully!',
       consultBtn: 'View checklist',
+      fullscreenFlagBtn: 'Show flag fullscreen',
       alertTitle: ' Non-conformities detected',
       alertBody: '{{count}} non-conforming criterion/criteria reported.',
       validationTracking: 'Validation tracking',
@@ -1203,6 +1204,18 @@ const en = {
         sessionExpired: 'Session expired. Please log in again.',
       },
     },
+  },
+  ltpmFlag: {
+    lastUpdate: 'Updated:',
+    refreshBtn: 'Refresh',
+    fullscreenBtn: 'Fullscreen',
+    exitBtn: 'Exit',
+    noMachineHint: 'No machine selected: open this screen from the operator checklist for per-machine tracking.',
+    photoModeBtn: 'Show a photo of the flag',
+    iconModeBtn: 'Switch back to icon view',
+    uploadPhotoBtn: 'Upload a photo for this state',
+    clearPhotoBtn: 'Remove the photo for this state',
+    noPhotoHint: 'No photo saved for this state: use the 📤 button to upload the flag photo to show here.',
   },
   status: {
     checklist: {

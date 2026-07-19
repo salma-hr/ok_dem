@@ -51,9 +51,16 @@ const EMPTY_FORM = { nom:"", matricule:"", password:"", roleId:"", processusId:"
 
 function toErrorText(err, fallback = "Erreur serveur.") {
   const data = err?.response?.data;
-  if (typeof data === "string") return data;
+  const looksTechnical = (text) =>
+    typeof text === "string" &&
+    /could not execute statement|SQLException|ConstraintViolationException|StackTrace|at com\.example|nested exception/i.test(text);
+  if (typeof data === "string") {
+    return looksTechnical(data) ? "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer." : data;
+  }
   if (data && typeof data === "object") {
-    return data.message || data.error || `${fallback} (code ${data.status || "inconnu"})`;
+    const m = data.message || data.error;
+    if (looksTechnical(m)) return "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.";
+    return m || `${fallback} (code ${data.status || "inconnu"})`;
   }
   return err?.message || fallback;
 }
@@ -78,6 +85,7 @@ export default function UtilisateursPage() {
   const [hardDeleteMsg,setHardDeleteMsg]= useState("");
   const [form,         setForm]         = useState(EMPTY_FORM);
   const [msg,          setMsg]          = useState("");
+  const [saving,       setSaving]       = useState(false);
   const [search,       setSearch]       = useState("");
   const [filterRole,   setFilterRole]   = useState("");
   const [filterStatut, setFilterStatut] = useState("");
@@ -141,6 +149,7 @@ export default function UtilisateursPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return; // Empêche le double-clic / double-soumission
     const parsedRoleId = Number(form.roleId);
     if (!Number.isInteger(parsedRoleId) || parsedRoleId <= 0) { setMsg("Veuillez sélectionner un rôle valide."); return; }
     if (isOperateurRole && !form.processusId) { setMsg("Veuillez sélectionner un processus pour l'opérateur."); return; }
@@ -153,6 +162,7 @@ export default function UtilisateursPage() {
       setMsg("Veuillez sélectionner un site et un plant pour cet utilisateur.");
       return;
     }
+    setSaving(true);
     try {
       const payload = {
         nom: form.nom, matricule: form.matricule, roleId: parsedRoleId,
@@ -184,6 +194,8 @@ export default function UtilisateursPage() {
       // Le backend renvoie un message texte brut (body(e.getMessage())), pas du JSON {message}.
       // err.response.data est donc directement la string d'erreur -> toErrorText() la gère déjà.
       setMsg(toErrorText(err, t("common.error")));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -477,9 +489,11 @@ export default function UtilisateursPage() {
 
             {msg && <div style={s.errMsg}>{msg}</div>}
             <div style={{display:"flex", gap:10, justifyContent:"flex-end", marginTop:8}}>
-              <button type="button" style={s.btnCancel} onClick={closeModal}>{t("admin.common.cancel")}</button>
-              <button type="submit" style={s.btnPrimary}>
-                {modal === "create" ? `✅ ${t("admin.users.modal.createSubmit")}` : `💾 ${t("admin.common.save")}`}
+              <button type="button" style={s.btnCancel} onClick={closeModal} disabled={saving}>{t("admin.common.cancel")}</button>
+              <button type="submit" style={{ ...s.btnPrimary, opacity: saving ? 0.6 : 1, cursor: saving ? "not-allowed" : "pointer" }} disabled={saving}>
+                {saving
+                  ? "⏳ Enregistrement..."
+                  : (modal === "create" ? `✅ ${t("admin.users.modal.createSubmit")}` : `💾 ${t("admin.common.save")}`)}
               </button>
             </div>
           </form>

@@ -89,13 +89,6 @@ export const previewCriteresPdf      = (file, processusId) => {
 };
 export const deleteCritere = (id) => api.delete(`/criteres/${id}`);
 
-// ── Traduction via LibreTranslate (proxy backend) ────────────────
-// Évite les problèmes CORS d'un appel direct depuis le browser.
-export const translateText = (text, source = "fr", target = "en") =>
-  api.post("/translate", { text, source, target });
-
-export const getTranslateStatus = () =>
-  api.get("/translate/status");
 export const generateAiCritereImage = (id, prompt) =>
   api.post(`/criteres/${id}/generate-ai-image`, null, { params: { prompt } });
 export const recomputeCritereImages = (processusId, force = true, limit = 0) =>

@@ -198,6 +198,8 @@ const DASHBOARD_ADVANCED_I18N = {
     period: 'Periode :',
     refresh: 'Actualiser',
     daysShort: 'j',
+    sem1: 'S1 (Jan-Juin)',
+    sem2: 'S2 (Juil-Dec)',
     selectToSeeDetail: 'Selectionnez un element pour voir le detail',
     filterByName: 'Filtrer par nom...',
     noFilterMatch: 'Aucun element ne correspond au filtre',
@@ -254,6 +256,8 @@ const DASHBOARD_ADVANCED_I18N = {
     period: 'Period:',
     refresh: 'Refresh',
     daysShort: 'd',
+    sem1: 'H1 (Jan-Jun)',
+    sem2: 'H2 (Jul-Dec)',
     selectToSeeDetail: 'Select an item to view details',
     filterByName: 'Filter by name...',
     noFilterMatch: 'No item matches the filter',
@@ -310,6 +314,8 @@ const DASHBOARD_ADVANCED_I18N = {
     period: 'Zeitraum:',
     refresh: 'Aktualisieren',
     daysShort: 'T',
+    sem1: 'H1 (Jan-Jun)',
+    sem2: 'H2 (Jul-Dez)',
     selectToSeeDetail: 'Wahlen Sie ein Element, um Details zu sehen',
     filterByName: 'Nach Name filtern...',
     noFilterMatch: 'Kein Element passt zum Filter',
@@ -366,6 +372,8 @@ const DASHBOARD_ADVANCED_I18N = {
     period: 'الفترة:',
     refresh: 'تحديث',
     daysShort: 'ي',
+    sem1: 'S1 (جانفي-جوان)',
+    sem2: 'S2 (جويلية-ديسمبر)',
     selectToSeeDetail: 'اختر عنصرا لعرض التفاصيل',
     filterByName: 'تصفية حسب الاسم...',
     noFilterMatch: 'لا يوجد عنصر يطابق الفلتر',
@@ -1095,6 +1103,7 @@ export default function DashboardAdvanced() {
   const [criteresMap, setCriteresMap] = useState({});
   const [rangeDays, setRange]   = useState(30);
   const [filterYear, setFilterYear] = useState(null); // null = all years
+  const [filterSemester, setFilterSemester] = useState(null); // null | 1 | 2 (actif seulement si une annee est selectionnee)
   const [exporting, setExporting] = useState(false);
   const dashboardRef = useRef(null);
 
@@ -1144,19 +1153,24 @@ export default function DashboardAdvanced() {
     return Array.from(years).sort((a, b) => b - a);
   }, [checklists]);
 
-  /* ── Filter CL by date range and/or year ── */
+  /* ── Filter CL by date range and/or year (+ semestre optionnel) ── */
   const clInRange = useMemo(() => {
     return checklists.filter(c => {
       const d = new Date(c.date || c.dateControle || c.creeLe || c.dateCreation);
       if (isNaN(d)) return false;
       if (filterYear !== null) {
-        return d.getFullYear() === filterYear;
+        if (d.getFullYear() !== filterYear) return false;
+        if (filterSemester !== null) {
+          const sem = d.getMonth() < 6 ? 1 : 2; // S1 = Jan-Juin, S2 = Juil-Dec
+          if (sem !== filterSemester) return false;
+        }
+        return true;
       }
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - rangeDays);
       return d >= cutoff;
     });
-  }, [checklists, rangeDays, filterYear]);
+  }, [checklists, rangeDays, filterYear, filterSemester]);
 
 
   /* ── NC stats by level ── */
@@ -1352,7 +1366,9 @@ const handleExportPDF = useCallback(async () => {
     // doc.autoTable fonctionne car jspdf-autotable est importé statiquement
     const W = doc.internal.pageSize.getWidth();
     const now = new Date().toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
-    const filterLabel = filterYear !== null ? `Année ${filterYear}` : `${rangeDays} derniers jours`;
+    const filterLabel = filterYear !== null
+      ? `Année ${filterYear}${filterSemester ? ` - S${filterSemester}` : ''}`
+      : `${rangeDays} derniers jours`;
     let y = 0;
 
     // ── Couleurs
@@ -1659,7 +1675,7 @@ if (siteStats.length > 0) {
     }
 
     // Sauvegarde
-    const fileName = `LEONI_rapport_${filterYear ?? `${rangeDays}j`}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    const fileName = `LEONI_rapport_${filterYear ? `${filterYear}${filterSemester ? `_S${filterSemester}` : ''}` : `${rangeDays}j`}_${new Date().toISOString().slice(0, 10)}.pdf`;
     doc.save(fileName);
 
   } catch (err) {
@@ -1668,7 +1684,7 @@ if (siteStats.length > 0) {
   } finally {
     setExporting(false);
   }
-}, [filterYear, rangeDays, locale, tr, tauxConf, stats, rejetes, validees, enAtt, totalCL,
+}, [filterYear, filterSemester, rangeDays, locale, tr, tauxConf, stats, rejetes, validees, enAtt, totalCL,
     siteStats, processusStats, clInRange, criteresMap, lang, opPerf, buildTopCriteresLocalized]);
 
   /* ── handlers ── */
@@ -1842,7 +1858,7 @@ if (siteStats.length > 0) {
             {[7, 14, 30, 90].map(n => (
             <button
               key={n}
-              onClick={() => { setRange(n); setFilterYear(null); }}
+              onClick={() => { setRange(n); setFilterYear(null); setFilterSemester(null); }}
               style={{
                 padding: '5px 12px',
                 fontSize: 11,
@@ -1867,7 +1883,7 @@ if (siteStats.length > 0) {
               {availableYears.map(year => (
                 <button
                   key={year}
-                  onClick={() => setFilterYear(filterYear === year ? null : year)}
+                  onClick={() => { setFilterYear(filterYear === year ? null : year); setFilterSemester(null); }}
                   style={{
                     padding: '5px 12px',
                     fontSize: 11,
@@ -1882,6 +1898,32 @@ if (siteStats.length > 0) {
                   }}
                 >
                   {year}
+                </button>
+              ))}
+            </div>
+          )}
+          {/* Semester filter (visible uniquement si une annee est selectionnee) */}
+          {filterYear !== null && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 10, color: LEONI.textMuted, fontWeight: 500 }}>|</span>
+              {[1, 2].map(sem => (
+                <button
+                  key={sem}
+                  onClick={() => setFilterSemester(filterSemester === sem ? null : sem)}
+                  style={{
+                    padding: '5px 12px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    border: `1px solid ${filterSemester === sem ? LEONI.accent.secondary : LEONI.border}`,
+                    background: filterSemester === sem ? LEONI.accent.secondary : 'transparent',
+                    color: filterSemester === sem ? '#fff' : LEONI.textSecondary,
+                    borderRadius: LEONI.radius.md,
+                    fontFamily: 'inherit',
+                    transition: LEONI.transition,
+                  }}
+                >
+                  {tr(sem === 1 ? 'sem1' : 'sem2')}
                 </button>
               ))}
             </div>

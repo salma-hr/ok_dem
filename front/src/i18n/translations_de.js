@@ -610,6 +610,18 @@ const de = {
       },
     },
   },
+  ltpmFlag: {
+    lastUpdate: 'Aktualisiert:',
+    refreshBtn: 'Aktualisieren',
+    fullscreenBtn: 'Vollbild',
+    exitBtn: 'Beenden',
+    noMachineHint: 'Keine Maschine ausgewählt: Öffnen Sie diesen Bildschirm über die Bedienerchecklist für eine maschinenbezogene Anzeige.',
+    photoModeBtn: 'Ein Foto der Flagge anzeigen',
+    iconModeBtn: 'Zur Symbolansicht zurückkehren',
+    uploadPhotoBtn: 'Foto für diesen Zustand hochladen',
+    clearPhotoBtn: 'Foto für diesen Zustand entfernen',
+    noPhotoHint: 'Kein Foto für diesen Zustand gespeichert: Nutzen Sie die Schaltfläche 📤, um das Flaggenfoto hochzuladen.',
+  },
   status: {
     checklist: {
       inProgress: 'In Bearbeitung',
@@ -728,6 +740,7 @@ const de = {
     success: {
       title: 'Checkliste eingereicht!',
       consultBtn: 'Checkliste ansehen',
+      fullscreenFlagBtn: 'Flagge im Vollbild anzeigen',
       alertTitle: '⚠️ Nichtkonformitäten festgestellt',
       alertBody: '{{count}} nicht konforme(s) Kriterium/-en gemeldet.',
       validationTracking: 'Validierungsverfolgung',

@@ -19,6 +19,7 @@ import ChecklistPage          from "./pages/sprint2/ChecklistPage";
 import OperateurChecklistPage        from "./pages/sprint2/OperateurChecklistPage";
 import OperateurChecklistConsultPage from "./pages/sprint2/OperateurChecklistConsultPage";
 import OperateursLtpmPage            from "./pages/sprint2/OperateursLtpmPage";
+import LtpmFlagDisplayPage           from "./pages/sprint2/LtpmFlagDisplayPage";
 import NotificationsPage      from "./components/NotificationBell";
 import MachinesPage           from "./pages/sprint2/MachinesPage";
 import './styles/theme.css';
@@ -128,6 +129,13 @@ export default function App() {
               <Route path="/checklist/operateurs-ltpm" element={
                 <PrivateRoute roles={["ADMIN","ADMIN_PLANT","AGENT_QUALITE","TECHNICIEN","CHEF_LIGNE"]}>
                   <Layout><OperateursLtpmPage /></Layout>
+                </PrivateRoute>
+              } />
+
+              {/* ── Drapeau LTPM plein écran (remplace le drapeau papier) ── */}
+              <Route path="/checklist/operateur/drapeau" element={
+                <PrivateRoute roles={["OPERATEUR","ADMIN","PPO","CHEF_LIGNE","ADMIN_PLANT"]}>
+                  <LtpmFlagDisplayPage />
                 </PrivateRoute>
               } />
 

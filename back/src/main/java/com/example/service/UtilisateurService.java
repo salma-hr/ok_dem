@@ -227,25 +227,34 @@ public class UtilisateurService {
         if (plantId != null) {
             plant = plantRepository.findById(plantId)
                     .orElseThrow(() -> new RuntimeException("Plant introuvable"));
-            if (site != null && plant.getSite() != null && !plant.getSite().getId().equals(site.getId())) {
+            // Plant.site est LAZY : on ne garde jamais le proxy tel quel (il casse la
+            // sérialisation JSON une fois la session fermée -> LazyInitializationException,
+            // alors que l'utilisateur est déjà enregistré en base à ce stade).
+            Long plantSiteId = plant.getSite() != null ? plant.getSite().getId() : null;
+            if (site != null && plantSiteId != null && !plantSiteId.equals(site.getId())) {
                 throw new RuntimeException("Le plant sélectionné n'appartient pas au site choisi.");
             }
-            if (site == null && plant.getSite() != null) {
-                site = plant.getSite();
+            if (site == null && plantSiteId != null) {
+                site = siteRepository.findById(plantSiteId).orElse(null);
             }
         }
 
         if (segmentId != null) {
             segment = segmentRepository.findById(segmentId)
                     .orElseThrow(() -> new RuntimeException("Segment introuvable"));
-            if (plant != null && segment.getPlant() != null && !segment.getPlant().getId().equals(plant.getId())) {
+            // Segment.plant est également LAZY : même précaution que ci-dessus.
+            Long segmentPlantId = segment.getPlant() != null ? segment.getPlant().getId() : null;
+            if (plant != null && segmentPlantId != null && !segmentPlantId.equals(plant.getId())) {
                 throw new RuntimeException("Le segment sélectionné n'appartient pas au plant choisi.");
             }
-            if (plant == null && segment.getPlant() != null) {
-                plant = segment.getPlant();
+            if (plant == null && segmentPlantId != null) {
+                plant = plantRepository.findById(segmentPlantId).orElse(null);
             }
-            if (site == null && plant != null && plant.getSite() != null) {
-                site = plant.getSite();
+            if (site == null && plant != null) {
+                Long derivedSiteId = plant.getSite() != null ? plant.getSite().getId() : null;
+                if (derivedSiteId != null) {
+                    site = siteRepository.findById(derivedSiteId).orElse(null);
+                }
             }
         }
 

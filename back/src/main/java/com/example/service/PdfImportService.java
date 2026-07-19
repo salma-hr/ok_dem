@@ -34,13 +34,9 @@ public class PdfImportService {
     private final ProcessusRepository processusRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final LibreTranslateService libreTranslateService;
 
     @Value("${pdf.extractor.url:http://localhost:8002/extract-pdf}")
     private String extractorUrl;
-
-    @Value("${libretranslate.import.enabled:true}")
-    private boolean translationEnabled;
 
     // ── Résultat retourné au contrôleur ──────────────────────────────────────
 
@@ -82,16 +78,6 @@ public class PdfImportService {
                 .orElseThrow(() -> new RuntimeException("Processus introuvable : " + processusId));
 
         // 3. Construire la BatchRequest
-        // Vérifier disponibilité LibreTranslate une seule fois avant la boucle
-        boolean canTranslate = translationEnabled && libreTranslateService.isAvailable();
-        if (translationEnabled && !canTranslate) {
-            warnings.add(
-                    "LibreTranslate indisponible — traductions EN/DE ignorées. Vérifiez que Docker tourne sur http://localhost:5000");
-            log.warn("LibreTranslate inaccessible : traductions EN/DE désactivées pour cet import");
-        } else if (canTranslate) {
-            log.info("LibreTranslate disponible : traduction automatique FR → EN + DE activée");
-        }
-
         List<CritereRequest> critereRequests = new ArrayList<>();
         for (JsonNode c : extraction.path("criteres")) {
             CritereRequest req = new CritereRequest();
@@ -106,18 +92,6 @@ public class PdfImportService {
             req.setCouleur(c.path("couleur").asText("Jaune"));
             req.setMoyenVerification(c.path("moyenVerification").asText("VISUEL"));
             req.setProcessusId(processusId);
-
-           if (canTranslate) {
-                req.setNomEn(libreTranslateService.toEnglish(nomFr));
-                req.setNomDe(libreTranslateService.toGerman(nomFr));
-                if (descFr != null && !descFr.isBlank()) {
-                    req.setDescriptionEn(libreTranslateService.toEnglish(descFr));
-                    req.setDescriptionDe(libreTranslateService.toGerman(descFr));
-                }
-            }
-            if (canTranslate) {
-                log.debug("Critère traduit : [FR] {} → [EN] {} / [DE] {}", nomFr, req.getNomEn(), req.getNomDe());
-            }
 
             // Mapping type
             String typeStr = c.path("type").asText("QUALITE");

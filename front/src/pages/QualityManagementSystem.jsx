@@ -2118,7 +2118,7 @@ function PagePlans() {
 
   const visiblePlans = useMemo(() => {
     const basePlans = isTechnicien && userMatricule
-      ? plans.filter(p => String(p.responsableMatricule || "").trim() === userMatricule)
+      ? plans.filter(p => String(p.responsableMatricule || "").trim().toLowerCase() === userMatricule.toLowerCase())
       : plans;
     return sortMostRecentDesc(basePlans, (p) => p?.majLe || p?.creeLe || p?.dateEcheance);
   }, [plans, isTechnicien, userMatricule]);
@@ -2137,10 +2137,10 @@ function PagePlans() {
     const isAutres = isPlanAutres(plan);
     const isCreatorChef = user?.role === "CHEF_LIGNE"
       && userMatricule
-      && String(plan.creeParMatricule || "").trim() === userMatricule;
+      && String(plan.creeParMatricule || "").trim().toLowerCase() === userMatricule.toLowerCase();
     const isTechnicienAssigned = isTechnicien
       && !isAutres
-      && (!plan.responsableMatricule || String(plan.responsableMatricule).trim() === userMatricule);
+      && (!plan.responsableMatricule || String(plan.responsableMatricule).trim().toLowerCase() === userMatricule.toLowerCase());
 
     // Red NC plans are closed by assigned technician, or by the creating Chef de ligne when assigned to 'Autres'
     if (isPlanRouge(plan)) {
@@ -2160,7 +2160,7 @@ function PagePlans() {
       const isAutres = isPlanAutres(plan);
       const isCreatorChef = user?.role === "CHEF_LIGNE"
         && userMatricule
-        && String(plan.creeParMatricule || "").trim() === userMatricule;
+        && String(plan.creeParMatricule || "").trim().toLowerCase() === userMatricule.toLowerCase();
       return isAutres && isCreatorChef;
     }
     return false;

@@ -7,7 +7,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { createCritere, getMonProfil, previewCriteresPdf, regenerateCritereImage, translateText } from "../../api";
+import { createCritere, getMonProfil, previewCriteresPdf, regenerateCritereImage } from "../../api";
 import { clearAuthStorage, getUsableStoredToken } from "../../utils/authToken";
 import { useI18n } from "../../context/I18nContext";
 
@@ -530,58 +530,15 @@ export default function ImportChecklistModal({
   checklistName = "",
 }) {
   const inputRef = useRef();
-  const translateCache = useRef({});
   const { t } = useI18n();
   const ts = (key, fb) => (typeof t === 'function' ? (t(key) || fb || key) : (fb || key));
 
-  // Traduit un texte FR → langue cible via le backend (qui proxy LibreTranslate Docker).
-  // Retourne le texte original en cas d'échec ou si la langue est déjà le français.
-  const libreTranslate = async (text, targetLang) => {
-    if (!text || !targetLang || targetLang === "fr") return text;
-    const key = `${targetLang}:${text}`;
-    if (translateCache.current[key]) return translateCache.current[key];
-    try {
-      const res = await translateText(text, "fr", targetLang);
-      const translated = res?.data?.translatedText || text;
-      translateCache.current[key] = translated;
-      return translated;
-    } catch {
-      return text;
-    }
-  };
-
-  const translateGerman = async (text) => {
-    if (!text) return text;
-    const direct = await libreTranslate(text, "de");
-    if (direct && direct.trim() && direct.trim() !== text.trim()) {
-      return direct;
-    }
-
-    const english = await libreTranslate(text, "en");
-    if (!english || !english.trim() || english.trim() === text.trim()) {
-      return direct || text;
-    }
-
-    const chained = await libreTranslate(english, "de");
-    if (chained && chained.trim() && chained.trim() !== english.trim()) {
-      return chained;
-    }
-
-    return direct || text;
-  };
-
-  // Construit les traductions secondaires pour l'aperçu et l'import.
-  // Le PDF fournit FR + AR; on ajoute EN + DE via LibreTranslate.
-  const buildTranslatedFields = async (nom, description) => {
-    if (!nom && !description) return {};
-    const [nomEn, descriptionEn, nomDe, descriptionDe] = await Promise.all([
-      libreTranslate(nom, "en"),
-      libreTranslate(description, "en"),
-      translateGerman(nom),
-      translateGerman(description),
-    ]);
-    return { nomEn, descriptionEn, nomDe, descriptionDe };
-  };
+  // Plus de traduction automatique (LibreTranslate/Docker retiré) :
+  // le PDF fournit FR + AR, les champs EN/DE restent vides et sont
+  // à saisir manuellement par l'utilisateur.
+  const buildTranslatedFields = async () => ({
+    nomEn: "", descriptionEn: "", nomDe: "", descriptionDe: "",
+  });
 
   // États
   const [dragOver, setDragOver] = useState(false);

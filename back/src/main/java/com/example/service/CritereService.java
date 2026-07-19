@@ -30,7 +30,6 @@ public class CritereService {
     private final CritereAuditService auditService;
     private final CritereImageStorageService imageStorageService;
     private final ImageGenerationCacheService imageGenerationCacheService;
-    private final LibreTranslateService libreTranslateService;
 
     @Value("${hf.auto.enabled:true}")
     private boolean hfAutoEnabled;
@@ -167,15 +166,12 @@ public class CritereService {
             c.setNomAr(req.getNomAr());
             c.setDescriptionAr(req.getDescriptionAr());
 
-            // LibreTranslate uniquement pour EN et DE
-            String nomFr  = req.getNom()         != null ? req.getNom().trim()         : "";
-            String descFr = req.getDescription() != null ? req.getDescription().trim() : "";
+            // EN/DE : saisie manuelle uniquement (plus de traduction automatique)
+            String nomEn  = resolveTranslation(req.getNomEn());
+            String descEn = resolveTranslation(req.getDescriptionEn());
 
-            String nomEn  = resolveTranslation(req.getNomEn(),  nomFr,  libreTranslateService::toEnglish);
-            String descEn = resolveTranslation(req.getDescriptionEn(), descFr, libreTranslateService::toEnglish);
-
-            String nomDe  = resolveTranslation(req.getNomDe(),  nomFr,  libreTranslateService::toGerman);
-            String descDe = resolveTranslation(req.getDescriptionDe(), descFr, libreTranslateService::toGerman);
+            String nomDe  = resolveTranslation(req.getNomDe());
+            String descDe = resolveTranslation(req.getDescriptionDe());
         c.setNomEn(nomEn);
         c.setDescriptionEn(descEn);
         c.setNomDe(nomDe);
@@ -213,19 +209,10 @@ public class CritereService {
         }
     }
 
-    private String resolveTranslation(String providedTranslation, String sourceText,
-            java.util.function.Function<String, String> translator) {
-        if (providedTranslation != null && !providedTranslation.isBlank()) {
-            String normalizedProvided = providedTranslation.trim();
-            String normalizedSource = sourceText == null ? "" : sourceText.trim();
-            if (!normalizedSource.isBlank() && !normalizedProvided.equalsIgnoreCase(normalizedSource)) {
-                return normalizedProvided;
-            }
-        }
-        if (sourceText == null || sourceText.isBlank()) {
-            return null;
-        }
-        return translator.apply(sourceText.trim());
+    private String resolveTranslation(String providedTranslation) {
+        return providedTranslation != null && !providedTranslation.isBlank()
+                ? providedTranslation.trim()
+                : null;
     }
 
     public boolean assignAutoImageIfMissing(Critere c) {

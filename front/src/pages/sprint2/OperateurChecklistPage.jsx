@@ -600,6 +600,28 @@ export default function OperateurChecklistPage() {
           localStorage.setItem("operateur_checklist_drafts_v1", JSON.stringify(all));
         }
       } catch (_) {}
+
+      // Affichage automatique du drapeau LTPM plein écran, sans action de l'opérateur :
+      // dès la soumission, on redirige directement vers la page dédiée.
+      try {
+        const raw = localStorage.getItem("ltpm_flag_display_v1");
+        const all = raw ? JSON.parse(raw) : {};
+        all[selMachine?.id || "default"] = {
+          bucket: submitBucket,
+          machineNom: selMachine?.nom || "",
+          processusNom: selProc?.nom || "",
+          date: new Date().toISOString(),
+          updatedAt: Date.now(),
+        };
+        localStorage.setItem("ltpm_flag_display_v1", JSON.stringify(all));
+      } catch { /* ignore */ }
+      const ltpmQuery = new URLSearchParams({
+        machineId: selMachine?.id ?? "",
+        machineNom: selMachine?.nom ?? "",
+        processusNom: selProc?.nom ?? "",
+        auto: "1",
+      }).toString();
+      navigate(`/checklist/operateur/drapeau?${ltpmQuery}`, { replace: true });
     } catch (err) {
       console.error("Soumission checklist échouée", { status: err?.response?.status, data: err?.response?.data });
       setError(extractApiError(err, t("operator.errors.submitFailed"), t));
@@ -721,6 +743,37 @@ export default function OperateurChecklistPage() {
           </div>
 
           <BtnConsulter style={{ width: "100%", justifyContent: "center" }} />
+
+          <button
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+              width: "100%", padding: "13px 28px", borderRadius: 14,
+              background: lcfg.gradient, color: "#fff", border: "none", cursor: "pointer",
+              fontSize: 14.5, fontWeight: 800, boxShadow: lcfg.glow, transition: "opacity .2s",
+            }}
+            onClick={() => {
+              try {
+                const raw = localStorage.getItem("ltpm_flag_display_v1");
+                const all = raw ? JSON.parse(raw) : {};
+                all[selMachine?.id || "default"] = {
+                  bucket: ltpmBucket,
+                  machineNom: selMachine?.nom || "",
+                  processusNom: selProc?.nom || "",
+                  date: new Date().toISOString(),
+                  updatedAt: Date.now(),
+                };
+                localStorage.setItem("ltpm_flag_display_v1", JSON.stringify(all));
+              } catch { /* ignore */ }
+              const q = new URLSearchParams({
+                machineId: selMachine?.id ?? "",
+                machineNom: selMachine?.nom ?? "",
+                processusNom: selProc?.nom ?? "",
+              }).toString();
+              window.open(`/checklist/operateur/drapeau?${q}`, "_blank");
+            }}
+          >
+            🖥️ {t("operator.success.fullscreenFlagBtn")}
+          </button>
 
           <div style={{ background: "var(--bg-1)", borderRadius: 12, padding: "14px 16px", border: "1px solid var(--bd-1)" }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 12 }}>
