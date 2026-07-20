@@ -75,10 +75,10 @@ export default function App() {
 
               {/* ── Admin ── */}
               <Route path="/admin/utilisateurs" element={
-                <PrivateRoute roles={["ADMIN","ADMIN_PLANT","CHEF_LIGNE"]}><Layout><UtilisateursPage /></Layout></PrivateRoute>
+                <PrivateRoute roles={["ADMIN","ADMIN_PLANT"]}><Layout><UtilisateursPage /></Layout></PrivateRoute>
               } />
               <Route path="/utilisateurs" element={
-                <PrivateRoute roles={["ADMIN","ADMIN_PLANT","CHEF_LIGNE"]}><Layout><UtilisateursPage /></Layout></PrivateRoute>
+                <PrivateRoute roles={["ADMIN","ADMIN_PLANT"]}><Layout><UtilisateursPage /></Layout></PrivateRoute>
               } />
              
 

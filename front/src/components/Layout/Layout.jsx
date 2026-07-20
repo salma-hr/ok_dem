@@ -62,7 +62,7 @@ const BASE_MENU = [
     { labelKey: 'menu.item.qualityHub', path: '/qualityMangement', icon: 'clipboard', roles: ['ADMIN', 'ADMIN_PLANT', 'CHEF_LIGNE', 'TECHNICIEN', 'AGENT_QUALITE'] },
   ]},
   { groupKey: 'menu.group.management', items: [
-    { labelKey: 'menu.item.users', path: '/admin/utilisateurs', icon: 'users', roles: ['ADMIN','ADMIN_PLANT','CHEF_LIGNE'] },
+    { labelKey: 'menu.item.users', path: '/admin/utilisateurs', icon: 'users', roles: ['ADMIN','ADMIN_PLANT'] },
     { labelKey: 'menu.item.machines', path: '/machines', icon: 'settings', roles: ['PPO','ADMIN','ADMIN_PLANT'] },
     { labelKey: 'menu.item.processes', path: '/processus', icon: 'processus', roles: ['PPO','ADMIN','ADMIN_PLANT'] },
     { labelKey: 'menu.item.criteria', path: '/criteres', icon: 'criteres', roles: ['PPO','ADMIN','ADMIN_PLANT'] },
